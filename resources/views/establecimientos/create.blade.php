@@ -132,12 +132,27 @@ href="https://unpkg.com/esri-leaflet-geocoder/dist/esri-leaflet-geocoder.css"
     autoPan: true
     }).addTo(mapa);
 
+
+    //Geocode Service
+    const geocodeService = L.esri.Geocoding.geocodeService();
+
     // Detectar movimiento del marker
     marker.on('moveend', function(e) {
     const marker = e.target;
     const posicion = marker.getLatLng();
     // Centrar automáticamente
     mapa.panTo(new L.LatLng(posicion.lat, posicion.lng));
+
+    // Reverse Geocoding, cuando el usuario reubica el pin
+    geocodeService.reverse().latlng(posicion, 16).run(function(error,resultado) {
+        console.log(error);
+
+        console.log(resultado.address);
+
+        marker.bindPopu(resultado.address.longLabel)
+        marker.openPopup();
+
+    })
 });
 
 
