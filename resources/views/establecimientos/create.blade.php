@@ -4,11 +4,6 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
 @endsection
 
-<link
-rel="stylesheet"
-href="https://unpkg.com/esri-leaflet-geocoder/dist/esri-leaflet-geocoder.css"
-/>
-
 @section('content')
 <div class="container">
     <h1 class="text-center mt-4">Registrar Establecimiento</h1>
@@ -112,11 +107,11 @@ href="https://unpkg.com/esri-leaflet-geocoder/dist/esri-leaflet-geocoder.css"
 
 @section('scripts')
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
 <script>
-    document.addEventListener('DOMContentLoaded', () => {
-    
-    const lat =  -13.632654;
-    const lng =  -72.887214;
+document.addEventListener('DOMContentLoaded', () => {
+    const lat = -13.632654;
+    const lng = -72.887214;
 
     const mapa = L.map('mapa').setView([lat, lng], 16);
 
@@ -127,39 +122,21 @@ href="https://unpkg.com/esri-leaflet-geocoder/dist/esri-leaflet-geocoder.css"
     let marker;
 
     // Agregar el pin
-    marker = new L.marker([lat, lng], {
-    draggable: true,
-    autoPan: true
-    }).addTo(mapa);
+        marker = new L.marker([lat, lng], {
+        draggable: true,
+        autoPan: true
+        }).addTo(mapa);
 
+        marker.on('moveend',function(e){
+            marker = e.target;
+            const posicion = marker.getLatLng();
+            console.log(posicion);
+            mapa.panTo(new L.LatLng(posicion.lat, posicion.lng));
 
-    //Geocode Service
-    const geocodeService = L.esri.Geocoding.geocodeService();
-
-    // Detectar movimiento del marker
-    marker.on('moveend', function(e) {
-    const marker = e.target;
-    const posicion = marker.getLatLng();
-    // Centrar automáticamente
-    mapa.panTo(new L.LatLng(posicion.lat, posicion.lng));
-
-    // Reverse Geocoding, cuando el usuario reubica el pin
-    geocodeService.reverse().latlng(posicion, 16).run(function(error,resultado) {
-        console.log(error);
-
-        console.log(resultado.address);
-
-        marker.bindPopu(resultado.address.longLabel)
-        marker.openPopup();
-
-    })
+        })
+    
 });
 
-
-});
 </script>
 
-
-<script src="https://unpkg.com/esri-leaflet" defer></script>
-<script src="https://unpkg.com/esri-leaflet-geocoder" defer></script>
 @endsection
